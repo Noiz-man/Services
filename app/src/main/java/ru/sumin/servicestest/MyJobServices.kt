@@ -45,4 +45,8 @@ class MyJobServices: JobService() {
         Log.d("myService", message)
     }
 
+    companion object {
+        const val JOB_ID = 3
+    }
+
 }
