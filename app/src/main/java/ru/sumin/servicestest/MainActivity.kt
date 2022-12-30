@@ -5,6 +5,7 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.job.JobInfo
 import android.app.job.JobScheduler
+import android.app.job.JobWorkItem
 import android.content.ComponentName
 import android.os.Build
 import android.os.Bundle
@@ -14,6 +15,8 @@ import androidx.core.content.ContextCompat
 import ru.sumin.servicestest.databinding.ActivityMainBinding
 
 class MainActivity : AppCompatActivity() {
+
+    private var page = 0
 
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
@@ -43,7 +46,14 @@ class MainActivity : AppCompatActivity() {
                 .setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
                 .build()
             val scheduler = getSystemService(JOB_SCHEDULER_SERVICE) as JobScheduler
-            scheduler.schedule(jobInfo)
+            val intent = MyJobServices.newIntent(page++)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                scheduler.enqueue(jobInfo, JobWorkItem(intent))
+            }
+        }
+
+        binding.jobIntentService.setOnClickListener {
+            MyJobIntentServices.onStartEnqueue(this, page++)
         }
     }
 }
